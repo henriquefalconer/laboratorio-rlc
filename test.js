@@ -1,0 +1,4 @@
+const assert=require('node:assert/strict');const {solve,parameters}=require('./solver');let count=0;function near(a,b,tol=1e-5){assert.ok(Math.abs(a-b)<=tol*Math.max(1,Math.abs(b)),`${a} != ${b}`);count++}
+const base={L:.1,C:.0001,R:20,f:60,E:100,theta:0,i0:0,v0:0};
+for(let R of [0,15.8113883008,63.24555320336759,126.4911064067,1e5])for(let theta of [0,90,-130])for(let resonance of [false,true]){let p={...base,R,theta,i0:1.3,v0:-15};if(resonance)p.f=parameters(p).f0;let d=solve(p,0);near(d.i,p.i0);near(d.v,p.v0);for(let t of [.001,.02,.07]){let h=1e-7,a=solve(p,t-h),b=solve(p,t+h),s=solve(p,t);near((b.v-a.v)/(2*h),s.i/p.C,1e-4);near((b.i-a.i)/(2*h),s.vL/p.L,1e-4);near(s.i,s.in+s.if);near(s.v,s.vn+s.vf);near((b.W-a.W)/(2*h),s.e*s.i-p.R*s.i*s.i,1e-4)}}
+let p={...base,R:0,E:0,i0:1,v0:100};for(let t of [0,.01,.1,1])near(solve(p,t).W,solve(p,0).W,1e-10);console.log(`${count} numerical checks passed`);

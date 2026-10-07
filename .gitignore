@@ -1,0 +1,23 @@
+# Agent sessions, logs, and local tooling
+.pi/
+
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+
+# Dependencies and generated files
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+coverage/
+
+# Temporary files and OS/editor metadata
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
