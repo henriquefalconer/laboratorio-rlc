@@ -16,7 +16,12 @@ function solve(p,t){
  else if(disc<0){let b=Math.sqrt(-disc),B=(d+a*A)/b,c=Math.cos(b*t),s=Math.sin(b*t),z=Math.exp(-a*t);vn=z*(A*c+B*s);dvn=z*((-a*A+b*B)*c+(-a*B-b*A)*s)}
  else{let b=Math.sqrt(disc),r1=-w0*w0/(a+b),r2=-a-b,B=(d-r2*A)/(r1-r2),D=A-B;vn=B*Math.exp(r1*t)+D*Math.exp(r2*t);dvn=r1*B*Math.exp(r1*t)+r2*D*Math.exp(r2*t)}
  const [vf,iforced]=forced(t),i=C*dvn+iforced,v=vn+vf,e=E*Math.cos(w*t+q);
- return {t,i,v,in:C*dvn,if:iforced,vn,vf,e,vR:R*i,vL:e-R*i-v,W:(L*i*i+C*v*v)/2};
+ // Quadrature envelopes combine natural and forced contributions, including beating.
+ let qi=0,qv=0;
+ if(disc<0){const b=Math.sqrt(-disc),z=Math.exp(-a*t),s=Math.sin(b*t),c=Math.cos(b*t),B=(d+a*A)/b; qv=z*(A*s-B*c);const Ai=C*d,Bi=C*(-a*B-b*A);qi=z*(Ai*s-Bi*c)}
+ if(R===0 && Math.abs(w-w0)<1e-10*w0){qv+=-E*w*t*Math.cos(w*t+q)/2;qi+=C*E*w*(-Math.cos(w*t+q)+w*t*Math.sin(w*t+q))/2}
+ else{const re=E*(R*Math.cos(q)+X*Math.sin(q))/den,im=E*(R*Math.sin(q)-X*Math.cos(q))/den;qi+=re*Math.sin(w*t)+im*Math.cos(w*t);qv+=(-re*Math.cos(w*t)+im*Math.sin(w*t))/(w*C)}
+ return {t,i,v,in:C*dvn,if:iforced,vn,vf,e,vR:R*i,vL:e-R*i-v,W:(L*i*i+C*v*v)/2,envelopeI:Math.hypot(i,qi),envelopeV:Math.hypot(v,qv)};
 }
 function parameters(p){const a=p.R/(2*p.L),w0=1/Math.sqrt(p.L*p.C);return {a,w0,z:a/w0,wd:Math.sqrt(Math.max(0,w0*w0-a*a)),rc:2*Math.sqrt(p.L/p.C),f0:w0/(2*Math.PI)}}
 const api={solve,parameters};if(typeof module!=='undefined')module.exports=api;else root.RLC=api;
